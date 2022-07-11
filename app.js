@@ -5,15 +5,18 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const ObjectId = require('mongodb').ObjectID;
 const _ = require("lodash");
+require('dotenv').config()
 
 const app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb+srv://admin:olXoldscS6bS2JqV@cluster0.ds09n.mongodb.net/todolistDB")
+mongoose.connect(process.env.MONGO_URI)
 
 
 const itemSchema = {
@@ -29,16 +32,16 @@ const listSchema = {
 
 const List = mongoose.model("List", listSchema);
 
-const item1 = new Item ({
+const item1 = new Item({
   name: "This is your to-do list"
 });
 
 
-const item2 = new Item ({
+const item2 = new Item({
   name: "Click + to add an item"
 });
 
-const item3 = new Item ({
+const item3 = new Item({
   name: "<- Click here to delete"
 });
 
@@ -53,13 +56,14 @@ app.get("/", function(req, res) {
       Item.insertMany(defaultItems, err => {
         if (err) {
           console.log(err);
-        } else {
-          console.log("Items were inserted successfully");
         }
       })
       res.redirect("/");
     } else {
-      res.render("list", {listTitle: "Today", newListItems: results});
+      res.render("list", {
+        listTitle: "Today",
+        newListItems: results
+      });
     }
   })
 });
@@ -68,7 +72,9 @@ app.get("/:listName", (req, res) => {
 
   const listName = _.capitalize(req.params.listName);
 
-  List.findOne({name: listName}, (err, results) => {
+  List.findOne({
+    name: listName
+  }, (err, results) => {
     if (!results) {
       const list = new List({
         name: listName,
@@ -78,7 +84,10 @@ app.get("/:listName", (req, res) => {
       res.redirect("/" + listName);
       //
     } else {
-      res.render("list", {listTitle: results.name, newListItems: results.items});
+      res.render("list", {
+        listTitle: results.name,
+        newListItems: results.items
+      });
 
 
     }
@@ -87,12 +96,12 @@ app.get("/:listName", (req, res) => {
 
 })
 
-app.post("/", function(req, res){
+app.post("/", function(req, res) {
 
   const itemName = req.body.newItem;
   const listName = req.body.list;
 
-  const item = new Item ({
+  const item = new Item({
     name: itemName
   });
 
@@ -100,7 +109,9 @@ app.post("/", function(req, res){
     item.save();
     res.redirect("/");
   } else {
-    List.findOne({name: listName}, (err, foundList) => {
+    List.findOne({
+      name: listName
+    }, (err, foundList) => {
       if (!err) {
         foundList.items.push(item);
         foundList.save();
@@ -126,7 +137,15 @@ app.post("/delete", (req, res) => {
     });
     res.redirect("/");
   } else {
-    List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: ObjectId(checkedItemID)}}}, (err, foundList) => {
+    List.findOneAndUpdate({
+      name: listName
+    }, {
+      $pull: {
+        items: {
+          _id: ObjectId(checkedItemID)
+        }
+      }
+    }, (err, foundList) => {
       if (!err) {
         res.redirect("/" + listName);
       } else {
@@ -139,7 +158,7 @@ app.post("/delete", (req, res) => {
 
 
 
-app.get("/about", function(req, res){
+app.get("/about", function(req, res) {
   res.render("about");
 });
 
