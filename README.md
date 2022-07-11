@@ -1,4 +1,4 @@
-This is a simple to do list app.
+# This is a simple to do list app.
 It's built with Express and uses MongoDB to store data.
 The app is deployed at https://lit-gorge-98053.herokuapp.com/
 The main to-do list is displayed on the front page. The main list cannot be empty, and if all items are deleted from the list, default items are re-created.
