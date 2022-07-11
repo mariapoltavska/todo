@@ -15,6 +15,7 @@ app.use(express.static("public"));
 
 mongoose.connect("mongodb+srv://admin:olXoldscS6bS2JqV@cluster0.ds09n.mongodb.net/todolistDB")
 
+
 const itemSchema = {
   name: String
 };
@@ -31,6 +32,7 @@ const List = mongoose.model("List", listSchema);
 const item1 = new Item ({
   name: "This is your to-do list"
 });
+
 
 const item2 = new Item ({
   name: "Click + to add an item"
